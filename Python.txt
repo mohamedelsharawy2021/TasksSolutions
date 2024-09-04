@@ -1,0 +1,114 @@
+import pandas as pd
+
+#Task1
+def salary_statistics(employees_Table):
+    salary_describe = employees_df['SALARY'].describe(percentiles=[.25, .5, .75])
+    statistics = {
+        'average': salary_describe['mean'],
+        'median': salary_describe['50%'],
+        'lower_quartile': salary_describe['25%'],
+        'upper_quartile': salary_describe['75%']
+    }
+    return stats
+
+
+
+#Task2
+def Avg_Salary_Per_Department(employees_table, departments_table):
+    merged_table = pd.merge(employees_table, departments_table, left_on='DEPARTMENT_ID',right_on='DEPARTMENT_IDENTIFIER')
+    
+    avg_salary_per_department = merged_table.groupby('DEPARTMENT_NAME')['SALARY'].mean().reset_index()
+    avg_salary_per_department.columns = ['Department Name', 'Average Salary']
+    
+    return avg_salary_per_department
+
+
+
+
+
+#Task3
+def Add_Category(employees_table):
+    # Calculate the average salary
+    average_salary = employees_table['SALARY'].mean()
+    
+    # Create the SALARY_CATEGORY column based on the average salary
+    employees_table['SALARY_CATEGORY'] = employees_table['SALARY'].apply(
+        lambda x: 'low' if x < average_salary else 'high'
+    )
+    
+    return employees_table
+
+
+#Task4
+def Avg_Salary_Per_Department(employees_table, departments_table):
+    merged_table = pd.merge(employees_table, departments_table, left_on='DEPARTMENT_ID', right_on='DEPARTMENT_IDENTIFIER')
+    avg_salary_per_department = merged_table.groupby('DEPARTMENT_NAME')['SALARY'].mean().reset_index()
+    avg_salary_per_department.columns = ['Department Name', 'Average Salary']
+    
+    merged_table = pd.merge(merged_table, avg_salary_per_department, on='Department Name')
+    
+    merged_table['SALARY_CATEGORY'] = merged_table.apply(
+        lambda row: 'low' if row['SALARY'] < merged_table['SALARY'].mean() else 'high', axis=1
+    )
+    
+    merged_table['SALARY_CATEGORY_AMONG_DEPARTMENT'] = merged_table.apply(
+        lambda row: 'low' if row['SALARY'] < row['Average Salary'] else 'high', axis=1
+    )
+    
+    result = merged_table[['FIRST_NAME', 'LAST_NAME', 'DEPARTMENT_NAME', 'SALARY', 'SALARY_CATEGORY', 'SALARY_CATEGORY_AMONG_DEPARTMENT']]
+    
+    return result
+
+#Task5
+def filter_employees_by_department(employees_table, department_id=20):
+    filtered_employees = employees_table[employees_table['DEPARTMENT_ID'] == department_id]
+    return filtered_employees
+
+
+
+#Task6
+def increase_salary_for_department(employees_table, department_id=20, increase_percentage=10):
+    employees_table.loc[employees_table['DEPARTMENT_ID'] == department_id, 'SALARY'] *= (1 + increase_percentage / 100)
+    return employees_table
+
+
+#Task7
+def check_empty_phone_numbers(employees_table):
+    empty_phone_numbers = employees_table['PHONE_NUMBER'].isna() | (employees_table['PHONE_NUMBER'] == '')
+    return employees_table[empty_phone_numbers]
+
+
+#Calling_Functions
+# Task 1: Calculate salary statistics
+stats = salary_statistics(employees)
+print("Salary Statistics:", stats)
+
+# Task 2: Calculate average salary per department
+avg_salary_df = Avg_Salary_Per_Department(employees, departments)
+print("Average Salary Per Department:\n", avg_salary_df)
+
+# Task 3: Calculate salary category
+salary_with_category = Avg_Salary_Per_Department(employees, departments)
+print("Average Salary with Category:\n", salary_with_category)
+
+# Task 4: Calculate average salary per department with two salary categories
+salary_with_categories = Add_Category(employees)
+print("Salary with  Categories:\n", salary_with_categories)
+
+# Task 5: Filter employees by department ID
+filtered_employees = filter_employees_by_department(employees, department_id=20)
+print("Filtered Employees:\n", filtered_employees)
+
+# Task 6: Increase salary for department
+updated_employees = increase_salary_for_department(employees, department_id=20, increase_percentage=10)
+print("Updated Employees:\n", updated_employees)
+
+# Task 7: Check for empty phone numbers
+empty_phone_numbers_df = check_empty_phone_numbers(employees)
+print("Employees with Empty Phone Numbers:\n", empty_phone_numbers_df)
+
+
+
+
+
+

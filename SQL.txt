@@ -1,0 +1,11 @@
+SELECT 
+    i.id AS Invoice_ID,
+    i.BillingDate AS Invoice_Billing_Date,
+    c.id AS Customer_ID,
+    c.Name AS Customer_Name,
+    r.id AS ReferredBy_CustomerID,
+    r.Name AS ReferredBy_CustomerName
+FROM Invoices i
+JOIN Customers c ON i.CustomerID = c.id
+LEFT JOIN Customers r ON c.referredBy = r.id
+ORDER BY i.BillingDate;
